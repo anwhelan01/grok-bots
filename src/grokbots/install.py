@@ -21,11 +21,19 @@ def skill_sources() -> list[Path]:
     skills = ROOT / "skills"
     return sorted(p for p in skills.iterdir() if p.is_dir() and (p / "SKILL.md").is_file())
 
-def render_profile(dest: Path, name: str, dry_run: bool = False) -> list[str]:
+def render_profile(dest: Path, name: str, dry_run: bool = False, force: bool = False) -> list[str]:
     actions: list[str] = []
     src = profile_source(name)
     profile_home = dest / "profiles" / name
     soul = profile_home / "SOUL.md"
+    if soul.is_file() and not force:
+        if soul.read_text() != src.read_text():
+            raise InstallError(
+                f"refusing to overwrite existing profile {name} at {soul}. "
+                "This fleet must not clobber a live Hermes roster. Pass force=True only after backup."
+            )
+        actions.append(f"KEEP {soul}")
+        return actions
     actions.append(f"{'DRY ' if dry_run else ''}WRITE {soul}")
     if not dry_run:
         profile_home.mkdir(parents=True, exist_ok=True)
@@ -45,7 +53,7 @@ def render_profile(dest: Path, name: str, dry_run: bool = False) -> list[str]:
             actions.append(f"SKILL {name}/{skill.name}")
     return actions
 
-def install_fleet(hermes_home: Path, dry_run: bool = False) -> list[str]:
+def install_fleet(hermes_home: Path, dry_run: bool = False, force: bool = False) -> list[str]:
     hermes_home = Path(hermes_home).expanduser().resolve()
     actions: list[str] = []
     shared = hermes_home / "workspace" / "grok-bots"
@@ -54,5 +62,5 @@ def install_fleet(hermes_home: Path, dry_run: bool = False) -> list[str]:
         shared.mkdir(parents=True, exist_ok=True)
         (shared / "jobs").mkdir(exist_ok=True)
     for bot in FLEET:
-        actions.extend(render_profile(hermes_home, bot.name, dry_run=dry_run))
+        actions.extend(render_profile(hermes_home, bot.name, dry_run=dry_run, force=force))
     return actions

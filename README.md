@@ -60,6 +60,8 @@ grokbots install --hermes-home ~/.hermes --dry-run
 
 Then in Hermes Desktop Bot Mode each profile is a Bot. Shared files: `~/.hermes/workspace/grok-bots/jobs/<id>/`.
 
+**Do not** install this fleet into a live Hermes home that already has `rae` or `scout`. The installer refuses to overwrite an existing SOUL.md. `--force` is last-resort, after backup, into an isolated `HERMES_HOME`.
+
 ```
 hermes model    # xAI Grok OAuth
 hermes -p scout chat

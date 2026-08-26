@@ -53,7 +53,7 @@ def cmd_show(ns: argparse.Namespace) -> int:
     return 0
 
 def cmd_install(ns: argparse.Namespace) -> int:
-    actions = install_fleet(Path(ns.hermes_home), dry_run=ns.dry_run)
+    actions = install_fleet(Path(ns.hermes_home), dry_run=ns.dry_run, force=ns.force)
     for line in actions:
         print(line)
     return 0
@@ -86,6 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
     inst = sub.add_parser("install", parents=[parent])
     inst.add_argument("--hermes-home", default="~/.hermes")
     inst.add_argument("--dry-run", action="store_true")
+    inst.add_argument("--force", action="store_true", help="Overwrite existing SOUL.md files. Do not use on a live roster.")
     inst.set_defaults(func=cmd_install)
     return p
 
