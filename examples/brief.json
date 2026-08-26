@@ -1,0 +1,8 @@
+{
+  "topic": "Grok Bot content factory mapped onto Hermes Bot Mode",
+  "account": "tonywhelan",
+  "channel": "x",
+  "hard_nos": ["auto-post", "engagement bait", "unlabelled AI media"],
+  "must_cite": true,
+  "max_posts": 1
+}
